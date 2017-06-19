@@ -76,7 +76,35 @@ features.df = cbind(rating = 1:200, danceability = features.content[,1],
 
 features.df = features.df %>% as.data.frame
 
+for (i in 1:ncol(features.df)) {
+  features.df[,i] = unlist(features.df[,i])
+}
+# //////////////////
+# SUMMARY STATS
+feature.means = sapply(2:14, function(n) {
+  mean(features.df[,n])
+})
+feature.sds = sapply(2:14, function(n) {
+  sd(features.df[,n])
+})
+feature.maxes = sapply(2:14, function(n) {
+  max(features.df[,n])
+})
+feature.mins = sapply(2:14, function(n) {
+  min(features.df[,n])
+})
+feature.medians = sapply(2:14, function(n) {
+  median(features.df[,n])
+})
 
+feature.summaries = cbind(feature = names(features.df)[-1],
+                          mean = feature.means,
+                          median = feature.medians,
+                          standard.deviation = feature.sds,
+                          min = feature.mins,
+                          max = feature.maxes,
+                          range = feature.maxes-feature.mins,
+                          range.over.sd = (feature.maxes-feature.mins)/feature.sds)
 
 
 # Audio Analysis
