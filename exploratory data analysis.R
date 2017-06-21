@@ -47,10 +47,34 @@ tracks.content = sapply(1:200, function(n) {
 })
 
 tracks.content = t(tracks.content)
-tracks.names = sapply(1:200, function(n) {
-  tracks.content[[n]]$name
+tracks.artists = sapply(1:200, function(n) {
+  tracks.content[[n]]$artists
 })
 
+tracks.artist.names = sapply(1:200,function(n){
+  tracks.artists[[n]][[1]]$name
+})
+tracks.artist.names = sapply(1:200,function(n){
+  substr(tracks.artist.names[n],1,length(tracks.artist.names)-1)
+})
+tracks.song =sapply(1:200, function(n){
+  tracks.content[[n]]$name
+})
+tracks.df$name = sapply(1:200,function(n){
+  tracks.content[n,11]
+})
+tracks.df$pop = sapply(1:200,function(n){
+  tracks.content[n,12]
+})
+tracks.df$album = sapply(1:200,function(n){
+  tracks.content[n,1][[1]][8]
+})
+
+
+tracks.df$artist  = tracks.artist.names
+tracks.df$id = sapply(1:200,function(n){
+  tracks.content[n,10]
+})
 tracks.df = cbind(rating = 1:200, name = tracks.names)
 tracks.df = tracks.df %>% as.data.frame
 
@@ -79,6 +103,14 @@ features.df = features.df %>% as.data.frame
 for (i in 1:ncol(features.df)) {
   features.df[,i] = unlist(features.df[,i])
 }
+
+features.df$id = sapply(1:200,function(n){
+  features.content[n,13]
+})
+
+#Merge features and track info
+master.df = cbind(tracks.df,features.df[,-c(1,15)])
+
 # //////////////////
 # SUMMARY STATS
 feature.means = sapply(2:14, function(n) {
@@ -112,3 +144,10 @@ feature.summaries = cbind(feature = names(features.df)[-1],
 #  GET(url = paste0("https://api.spotify.com/v1/audio-analysis/", top.song.ids[n]),
 #           config = add_headers(authorization = authorization.header))
 #})
+ggplot(data=master.df,aes(x= pop,y=rating)) + geom_point()
+master.df$pop
+clasnames = lapply()
+name.start = regexpr('name',s)
+name.end = regexpr('type',s)
+name = substr(s,name.start+8,name.end-4)
+name
