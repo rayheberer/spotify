@@ -3,7 +3,7 @@
 library(httr)
 library(magrittr)
 library(rvest)
-library(jsonlite)
+library(ggplot2)
 # //////////////////
 clientID = ""
 secret = ""
@@ -26,15 +26,21 @@ authorization.header = paste0("Bearer ", token)
 # WEB SCRAPING
 
 
-daily.top.songs = read_html("https://spotifycharts.com/regional/global/daily/latest") %>%
+weekly.top.songs = read_html("https://spotifycharts.com/regional/global/weekly/latest") %>%
   html_nodes("#content > div > div > div > span > table > tbody > tr > td.chart-table-image > a")
 
-id.start = regexpr("/track/", daily.top.songs) # seems to always be 7
-id.end = regexpr('" target="', daily.top.songs) # seems to always be 63
+id.start = regexpr("/track/", weekly.top.songs) # seems to always be 7
+id.end = regexpr('" target="', weekly.top.songs) # seems to always be 63
 
-top.song.ids = substr(daily.top.songs, id.start+7, id.end-1)
+top.song.ids = substr(weekly.top.songs, id.start+7, id.end-1)
 # //////////////////
-# API requests
+# API REQUESTS
+
+# Audio Analysis
+#analyses = lapply(1:200, function(n) {
+#  GET(url = paste0("https://api.spotify.com/v1/audio-analysis/", top.song.ids[n]),
+#           config = add_headers(authorization = authorization.header))
+#})
 
 # Get track
 tracks = lapply(1:200, function(n) {
@@ -66,12 +72,12 @@ features.content = sapply(1:200, function(n) {
 
 features.content = t(features.content)
 
-features.df = cbind(rating = 1:200, danceability = features.content[,1], 
+features.df = cbind(rank = 1:200, rank.desc = 200:1, danceability = features.content[,1], 
                     energy = features.content[,2], key = features.content[,3], 
                     loudness = features.content[,4], mode = features.content[,5],
                     speechiness = features.content[,6], acousticness = features.content[,7],
                     instrumentalness = features.content[,8], liveness = features.content[,9],
-                    valence = features.content[,9], tempo = features.content[,10], 
+                    valence = features.content[,10], tempo = features.content[,11], 
                     duration_ms = features.content[,17], time_signature = features.content[,18])
 
 features.df = features.df %>% as.data.frame
@@ -81,34 +87,53 @@ for (i in 1:ncol(features.df)) {
 }
 # //////////////////
 # SUMMARY STATS
-feature.means = sapply(2:14, function(n) {
+feature.means = sapply(3:15, function(n) {
   mean(features.df[,n])
 })
-feature.sds = sapply(2:14, function(n) {
+feature.sds = sapply(3:15, function(n) {
   sd(features.df[,n])
 })
-feature.maxes = sapply(2:14, function(n) {
+feature.maxes = sapply(3:15, function(n) {
   max(features.df[,n])
 })
-feature.mins = sapply(2:14, function(n) {
+feature.mins = sapply(3:15, function(n) {
   min(features.df[,n])
 })
-feature.medians = sapply(2:14, function(n) {
+feature.medians = sapply(3:15, function(n) {
   median(features.df[,n])
 })
 
-feature.summaries = cbind(feature = names(features.df)[-1],
+feature.summaries = cbind(feature = names(features.df)[-c(1,2)],
                           mean = feature.means,
                           median = feature.medians,
                           standard.deviation = feature.sds,
                           min = feature.mins,
                           max = feature.maxes,
                           range = feature.maxes-feature.mins,
-                          range.over.sd = (feature.maxes-feature.mins)/feature.sds)
+                          range.over.sd = (feature.maxes-feature.mins)/feature.sds,
+                          skewness = 3*(feature.means-feature.medians)/feature.sds)
+# //////////////////
+# VISUALIZATIONS
+ggplot(features.df, aes(x = danceability)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = energy)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = speechiness)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = liveness)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = valence)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = tempo)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = duration_ms)) + geom_histogram(bins = 25) + theme_minimal()
+ggplot(features.df, aes(x = mode)) + geom_bar() + theme_minimal()
+ggplot(features.df, aes(x = time_signature)) + geom_bar() + theme_minimal()
+ggplot(features.df, aes(x = key)) + geom_bar() + theme_minimal()
 
+ggplot(features.df, aes(x = danceability, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = energy, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = speechiness, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = liveness, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = valence, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = tempo, y = rank.desc)) + geom_point() + theme_minimal()
+ggplot(features.df, aes(x = duration_ms, y = rank.desc)) + geom_point() + theme_minimal()
 
-# Audio Analysis
-#analyses = lapply(1:200, function(n) {
-#  GET(url = paste0("https://api.spotify.com/v1/audio-analysis/", top.song.ids[n]),
-#           config = add_headers(authorization = authorization.header))
-#})
+ggplot(features.df, aes(x = key, y = rank.desc)) + geom_point() + theme_minimal()
+# //////////////////
+# modeling
+
