@@ -29,7 +29,7 @@ authorization.header = paste0("Bearer ", token)
 weekly.top.songs = read_html("https://spotifycharts.com/regional/global/weekly/latest") %>%
   html_nodes("#content > div > div > div > span > table > tbody > tr > td.chart-table-image > a")
 
-id.start = regexpr("/track/", weekly.top.songs) # seems to always be 7
+id.start = regexpr("/track/", weekly.top.songs) # seems to always be 34
 id.end = regexpr('" target="', weekly.top.songs) # seems to always be 63
 
 top.song.ids = substr(weekly.top.songs, id.start+7, id.end-1)
