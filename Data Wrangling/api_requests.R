@@ -89,7 +89,7 @@ features.dti.100.b = lapply(dti.1_100.bottom, function(ids) {
       config = add_headers(authorization = authorization.header))
 })
 
-tracks.dti.300.q2 = lapply(dti.201_300.q2, function(ids) {
+tracks.dti.400.q4 = lapply(dti.301_400.q4, function(ids) {
   GET(url = paste0("https://api.spotify.com/v1/tracks/?ids=", ids),
       config = add_headers(authorization = authorization.header))
 })
