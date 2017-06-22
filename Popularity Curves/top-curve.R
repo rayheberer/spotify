@@ -7,30 +7,16 @@ match_number = sapply(daily.top.ids.all, function(day) {
 
 
 
-matches = lapply(daily.top.ids.all[[1]], function(id) {
-  vector = sapply(daily.top.ids.all, function(day) {
-    paste(match(id, day), id)
+top.curves = lapply(daily.top.ids.all[[1]], function(id) {
+  vector = sapply(1:400, function(n) {
+    paste(match(id, daily.top.ids.all[[n]]), 
+          id, 
+          as.Date("2017-06-20")-n+1,
+          201 - match(id, daily.top.ids.all[[n]]))
   })
-  df = data.frame(data = df)
+  df = data.frame(data = vector) %>% 
+    separate(data, c("position", "id", "date", "popularity"), sep = " ")
 })
 
 
-top.curves = lapply(1:400, function(n) {
-  lapply(daily.top.ids.all[[n]], function(id) {
-    sapply(daily.top.ids.all, function(day) {
-      paste(match(id, day), id)
-    })
-  })
-})
 
-head(top.curves)
-top.curves[[1]]
-tail(top.curves[[1]])
-top.curves[[1]][[1]][1]
-
-
-my_vector = c("1 keyzz1", "2 keyzz1", "1 keyzz1", "5 keyzz1", "7 keyzz1")
-#
-my_df = data.frame(foo = my_vector)
-#
-separate(my_df, foo, c("position", "key"), sep = " ")

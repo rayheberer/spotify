@@ -5,13 +5,13 @@ match_number = sapply(daily.viral.ids.all, function(day) {
 })
 
 
-daily.viral.ids.all <-  c(daily.viral.ids.1_100, daily.viral.ids.101_200, daily.viral.ids.201_300, daily.viral.ids.301_400)
-
-viral_curve() -> function(){
-  for (i in 1:50){
-  matched = c()
-  sapply(daily.viral.ids.all[[i]], function(day) {
-    match(id, day)
+viral.curves = lapply(daily.top.ids.all[[1]], function(id) {
+  vector = sapply(1:400, function(n) {
+    paste(match(id, daily.top.ids.all[[n]]), 
+          id, 
+          as.Date("2017-06-20")-n+1,
+          201 - match(id, daily.top.ids.all[[n]]))
   })
-  }
-}
+  df = data.frame(data = vector) %>% 
+    separate(data, c("position", "id", "date", "popularity"), sep = " ")
+})
