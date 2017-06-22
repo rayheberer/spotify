@@ -8,6 +8,7 @@ library(ggplot2)
 clientID = ""
 secret = ""
 
+
 response = POST(
   'https://accounts.spotify.com/api/token',
   accept_json(),
@@ -81,8 +82,57 @@ tracks.df$artist  = tracks.artist.names
 tracks.df$id = sapply(1:200,function(n){
   tracks.content[n,10]
 })
-tracks.df = cbind(rating = 1:200, name = tracks.names)
-tracks.df = tracks.df %>% as.data.frame
+# tracks.df = cbind(rating = 1:200, name = tracks.names)
+# tracks.df = tracks.df %>% as.data.frame
+
+#--------------------------------------------------------
+
+
+# Artist Analysis
+
+# IDs for all artists in the top 200
+tracks.artist.ids = lapply(1:200, function(n) {
+  tracks.artists[[n]][[1]]$id
+})
+tracks.artist.ids = unlist(tracks.artist.ids)
+
+related.artists = lapply(1:200, function(n) {
+  GET(url = sprintf("https://api.spotify.com/v1/artists/%s/related-artists",
+                    tracks.artist.ids[n]),
+                    config = add_headers(authorization = authorization.header))
+})
+related.artists.content = sapply(1:200, function(n) {
+  content(related.artists[[n]])
+})
+
+related.artists.names = sapply(1:200, function(n) {
+  sapply(1:20, function(m) {
+    related.artists.content[[n]][[m]]$name
+  })
+})
+related.artists.names = t(related.artists.names)
+related.artists.names = as.data.frame(related.artists.names)
+related.artists.names$original = tracks.artist.names
+
+
+
+
+related.artists.ids = sapply(1:200, function(n) {
+  sapply(1:20, function(m) {
+    related.artists.content[[n]][[m]]$id
+  })
+})
+related.artists.ids = t(related.artists.ids)
+related.artists.ids = as.data.frame(related.artists.ids)
+
+
+# TODO: DO ANALYSIS ON THE RELATED ARTISTS OF EACH OF THE TOP 200 ARTISTS
+
+#--------------------------------------------------------
+
+
+
+
 
 # Audio Features
 features = lapply(1:200, function(n) {
@@ -181,3 +231,11 @@ name.start = regexpr('name',s)
 name.end = regexpr('type',s)
 name = substr(s,name.start+8,name.end-4)
 name
+
+
+
+
+
+
+
+
