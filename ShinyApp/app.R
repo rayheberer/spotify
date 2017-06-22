@@ -14,12 +14,14 @@ ui = fluidPage(
                   label = "Top Chart Ranks Included",
                   value = c(1,200),
                   min = 1,
-                  max = 200)
+                  max = 200),
+      selectInput(inputId = "feature",
+                  label = "Feature",
+                  choices = c("Danceability", "Energy", "Valence"))
       
     ),
     
     mainPanel(
-      
     )
   )
   
