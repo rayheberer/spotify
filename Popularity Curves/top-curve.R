@@ -22,4 +22,6 @@ top.curves = lapply(daily.top.ids.all[[1]], function(id) {
 
 
 
-ggplot(top.curves[[2]], aes(x = date, y = position)) + geom_point()
+ggplot(top.curves[[1]], aes(x = as.Date(date), y = as.numeric(popularity))) + geom_point()
+
+top.curves[[180]]$id
