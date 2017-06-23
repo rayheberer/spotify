@@ -54,7 +54,7 @@ features.list.b = lapply(features.content.b[[1]], function(track) {
 features.df.t = ldply(features.list.t)
 features.df.b = ldply(features.list.b)
 
-features.df.200 = rbind(features.df.t, features.df.b)
+features.df = rbind(features.df.t, features.df.b)
 
-features.df.100$rank = 1:200
-features.df.100$popularity = 200:1
+features.df$rank = 1:200
+features.df$popularity = 200:1
