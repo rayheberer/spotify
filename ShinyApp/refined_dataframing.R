@@ -58,4 +58,3 @@ features.df.200 = rbind(features.df.t, features.df.b)
 
 features.df.100$rank = 1:200
 features.df.100$popularity = 200:1
-features.df.100$date = as.Date()
