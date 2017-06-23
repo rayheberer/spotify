@@ -29,13 +29,22 @@ ui = fluidPage(
                   max = 200),
       selectInput(inputId = "feature",
                   label = "Feature",
-                  choices = c("danceability", "energy", "valence"))
+                  choices = c("danceability", "energy", "key",
+                              "loudness", "mode", "speechiness", 
+                              "acousticness", "instrumentalness",
+                              "liveness", "valence", "tempo", "duration_ms",
+                              "time_signature")),
+      sliderInput(inputId = "bins",
+                  label = "Histogram Bins",
+                  value = 30,
+                  min = 1,
+                  max = 50)
       
     ),
     
     mainPanel(
-      plotOutput(outputId = "mainplot")
-    )
+      plotOutput(outputId = "histogram")
+      )
   )
   
 )
@@ -104,28 +113,11 @@ server = function(input, output) {
   features.df$rank = 1:200
   features.df$popularity = 200:1
   
-  output$mainplot = renderPlot(
-    ggplot(features.df, aes(x = eval(parse(text = input$feature)))) + geom_histogram() +
-      xlab(input$feature)
+  output$histogram = renderPlot(
+    ggplot(features.df[min(input$rank):max(input$rank),], aes(x = eval(parse(text = input$feature)))) + 
+      geom_histogram(bins = input$bins, fill = "#428bca", alpha = 0.9, color = "black") +
+      xlab(input$feature) + theme_minimal()
     )
-  
-  #if (observe({input$feature}) == "Danceability") {
-  #  output$mainplot = renderPlot(
-  #    ggplot(features.df, aes(x = danceability)) + geom_histogram()
-  #  )
-  #}
-  
-  #if (observe({input$feature}) == "Energy") {
-  #  output$mainplot = renderPlot(
-  #    ggplot(features.df, aes(x = energy)) + geom_histogram()
-  #  )
-  #}
-  
-  #if (observe({input$feature}) == "Valence") {
-  #  output$mainplot = renderPlot(
-  #    ggplot(features.df, aes(x = valence)) + geom_histogram()
-  #  )
-  #}
   
 }
 
