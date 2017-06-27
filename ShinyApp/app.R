@@ -1,6 +1,7 @@
 library(shiny)
 library(httr)
 library(ggplot2)
+library(plyr)
 
 features.dti.100.b = readRDS("data/features.dti.100.b.rds")
 features.dti.100.t = readRDS("data/features.dti.100.t.rds")
@@ -10,6 +11,15 @@ features.dti.300.b = readRDS("data/features.dti.300.b.rds")
 features.dti.300.t = readRDS("data/features.dti.300.t.rds")
 features.dti.400.b = readRDS("data/features.dti.400.b.rds")
 features.dti.400.t = readRDS("data/features.dti.400.t.rds")
+
+features.content.t = sapply(features.dti.100.t, function(day) {
+  content(day)
+})
+
+features.content.b = sapply(features.dti.100.b, function(day) {
+  content(day)
+})
+
 
 
 ui = fluidPage(
@@ -49,17 +59,12 @@ ui = fluidPage(
   
 )
 
-server = function(input, output) {
+server = function(input, output, session) {
   
-  date = observe(input$date)
-  #index = as.numeric(as.Date("2017-06-20") - date)
-  
-  features.content.t = sapply(features.dti.100.t, function(day) {
-    content(day)
-  })
-  
-  features.content.b = sapply(features.dti.100.b, function(day) {
-    content(day)
+
+  observe({
+    date = input$date
+    index = as.numeric(as.Date("2017-06-20") - date)
   })
   
   features.list.t = lapply(features.content.t[[1]], function(track) {
@@ -112,6 +117,18 @@ server = function(input, output) {
   
   features.df$rank = 1:200
   features.df$popularity = 200:1
+  
+  
+  
+  observe({
+    if (input$feature == "key") {
+      updateSliderInput(session, "bins", value = 12, min = 1, max = 12)
+    } else if (input$feature == "mode" | input$feature == "time_signature") {
+      updateSliderInput(session, "bins", value = 2, min = 1, max = 2)
+    } else {
+      updateSliderInput(session, "bins", value = 30, min = 1, max = 50)
+    }
+  })
   
   output$histogram = renderPlot(
     ggplot(features.df[min(input$rank):max(input$rank),], aes(x = eval(parse(text = input$feature)))) + 
