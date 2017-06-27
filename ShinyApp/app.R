@@ -24,6 +24,9 @@ features.content.b = sapply(features.dti.100.b, function(day) {
 
 ui = fluidPage(
   
+  HTML('<h2 style = "text-align: center;">Top 200 Spotify Tracks: Audio Features Explorer</h2>'),
+  hr(),
+  
   sidebarLayout(
     
     sidebarPanel(
@@ -55,7 +58,9 @@ ui = fluidPage(
     mainPanel(
       plotOutput(outputId = "histogram")
       )
-  )
+  ),
+  
+  hr()
   
 )
 
@@ -117,8 +122,6 @@ server = function(input, output, session) {
   
   features.df$rank = 1:200
   features.df$popularity = 200:1
-  
-  
   
   observe({
     if (input$feature == "key") {
