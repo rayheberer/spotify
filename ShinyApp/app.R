@@ -32,7 +32,7 @@ ui = fluidPage(
     
     sidebarPanel(
       dateInput(inputId = "date",
-                label = "Date",
+                label = "Date (functionality in development)",
                 value = "2017-06-20",
                 min = "2017-03-13",
                 max = "2017-06-20"),
