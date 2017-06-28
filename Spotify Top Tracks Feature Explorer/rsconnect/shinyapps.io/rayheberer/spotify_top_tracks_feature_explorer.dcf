@@ -1,0 +1,10 @@
+name: spotify_top_tracks_feature_explorer
+title: Spotify Top Tracks: Feature Explorer
+account: rayheberer
+server: shinyapps.io
+appId: 192647
+bundleId: 883803
+url: https://rayheberer.shinyapps.io/spotify_top_tracks_feature_explorer/
+when: 1498565395.04401
+asMultiple: FALSE
+asStatic: FALSE
