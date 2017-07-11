@@ -20,3 +20,5 @@ A more coherent data collection process will be developed soon.
 ## Shiny App
 
 The /ShinyApp/ subdirectory contains a Shiny App meant to produce quick visualizations for the distribution of audio features in top tracks for any given day.
+
+The current version of the app is published at https://rayheberer.shinyapps.io/spotify_top_tracks_feature_explorer/.
